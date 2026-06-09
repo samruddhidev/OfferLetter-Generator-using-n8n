@@ -1,0 +1,159 @@
+{
+  "name": "OfferLetter Generator",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1u0A3m4QLFsoxXDSo1vvV00jJPi5N170x84kInP-MOVE",
+          "mode": "list",
+          "cachedResultName": "HR OFFER LETTERS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1u0A3m4QLFsoxXDSo1vvV00jJPi5N170x84kInP-MOVE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "OfferLetters",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1u0A3m4QLFsoxXDSo1vvV00jJPi5N170x84kInP-MOVE/edit#gid=0"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "aa8ef0fe-6663-426f-9b6e-393f90915695",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "WjmwaEvgN75WrODK",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:11434/api/generate",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"qwen3:1.7b\",\n  \"prompt\": \"Write a professional offer letter using ONLY these values, do not change any numbers or dates:\\n\\nCandidate Name: {{ $json['Candidate Name'] }}\\nJob Role: {{ $json['Job Role'] }}\\nLocation: {{ $json['Location'] }}\\nCTC: {{ $json['CTC'] }}\\nJoining Date: {{ $json['Joining Date'] }}\\nProbation Period: {{ $json['Probation Period'] }}\\nCompany: TechCorp Solutions\\nHR Manager: Sarah Johnson\\nDate: 09 June 2026\\nAddress: 123 Business Park, Mumbai\\n\\nRules:\\n- Use the EXACT CTC value given, do not change it\\n- Use the EXACT joining date given, do not change it\\n- Use the EXACT candidate name given\\n- No brackets, no placeholders\\n- Include sections: Position Details, Role Overview, Terms of Employment, Acceptance of Offer\\n- End with Warm regards, Sarah Johnson, HR Manager, TechCorp Solutions\",\n  \"stream\": false,\n  \"think\": false\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "6c60769e-366f-45c2-b89b-fed2d0915a14",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "inputDataFieldName": "=data",
+        "name": "={{ $('Google Sheets Trigger').item.json['Candidate Name'] }}_OfferLetter.txt",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1SWpvWIcQLN2RTFmGYQPnpYicaLo3krnd",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        624,
+        0
+      ],
+      "id": "a971d475-36b2-4b2c-a199-0460b98e4e12",
+      "name": "Upload file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "xZGOU6EQPtlEeDEF",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "response",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "0c0878cb-323e-4424-9111-3e31a25bed2b",
+      "name": "Convert to File"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "c77a387e-d37d-4cf4-bb7a-87f6e32a48f3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "042f3566a01d604b3f86d77423e5c716914f42e09125889013c342d7984d2ef7"
+  },
+  "nodeGroups": [],
+  "id": "pg4Uq5CbtO99C0m7",
+  "tags": []
+}
